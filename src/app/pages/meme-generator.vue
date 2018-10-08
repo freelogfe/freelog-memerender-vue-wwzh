@@ -55,6 +55,9 @@
         {{targMeme}}
       </div>
     </div>
+    <div class="meme-message-box" v-if="isShowMsgBox">
+      {{msg}}
+    </div>
   </div>
 
 </template>
@@ -67,6 +70,8 @@
     },
     data() {
       return {
+        isShowMsgBox: false,
+        msg: 'fsafa 副书记',
         actImgIndex: 0,
         imgArr: [],
         actTabIndex: 0,
@@ -119,12 +124,16 @@
           ],
           "descriptions": desc
         })
+        console.log(this.$message)
 
-        return
         this.uploadMeme()
           .then(sha1 => this.createMemeResource(sha1))
           .then(res => {
-            console.log(res)
+            if(res.errCode === 0){
+              this.showMsgBox('meme 创建成功！！！')
+            }else{
+              this.showMsgBox(`meme 创建失败，error:${msg}`)
+            }
           })
       },
       uploadMeme() {
@@ -176,6 +185,14 @@
         index++
         index = index == this.fontSizeArr.length ? index - 1 : index
         this.infoStyleArr[actInfoIndex].fontSize = this.fontSizeArr[index]
+      },
+      showMsgBox (msg){
+        this.isShowMsgBox = true
+        this.msg = msg
+        clearTimeout(this.timer)
+        this.timer = setTimeout(() => {
+          this.isShowMsgBox = false
+        }, 2000)
       }
     },
     computed: {},
@@ -194,6 +211,9 @@
             })
           }
         })
+    },
+    destroyed (){
+      clearTimeout(this.timer)
     }
   }
 
@@ -214,7 +234,7 @@
     margin-bottom: 5px;
 
     h3 {
-      margin-bottom: 5px;
+      margin: 20px 0 5px 0;
       font-size: 16px;
     }
 
@@ -264,7 +284,7 @@
     font-size: 22px;
     font-weight: bold;
   }
-  
+
   .meme-g-cont{
     display: flex;
 
@@ -367,8 +387,6 @@
     vertical-align: middle;
   }
 
-
-
   .meme-showed-box {
     margin-top: 15px;
     padding: 20px;
@@ -376,6 +394,20 @@
     border: 1px solid #ccc;
   }
 
+  .meme-message-box{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 1000;
+    min-width: 300px;
+    padding: 10px 20px;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, .7);
+    color: #fff;
+    font-size: 16px;
+    text-align: center;
+    transform: translateX(-50%) translateY(-50%);
+  }
 </style>
 
 
