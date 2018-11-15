@@ -58,6 +58,7 @@
     <div class="meme-message-box" v-if="isShowMsgBox">
       {{msg}}
     </div>
+    <a ref="newWindowLink" href="javascript:void(0);" target="_blank" v-show="false"></a>
   </div>
 
 </template>
@@ -100,6 +101,7 @@
         this.actTabIndex = index
       },
       createMeme() {
+
         var desc = []
         this.infoStyleArr.forEach((item, index) => {
           var temp = {}
@@ -124,15 +126,17 @@
           ],
           "descriptions": desc
         })
-        console.log(this.$message)
 
         this.uploadMeme()
           .then(sha1 => this.createMemeResource(sha1))
           .then(res => {
-            if(res.errCode === 0){
+            if(res.errcode === 0){
+              this.$refs.newWindowLink.setAttribute('href', `http://console.testfreelog.com/resource/edit/${res.data.resourceId}`)
+              this.$refs.newWindowLink.click()
+
               this.showMsgBox('meme 创建成功！！！')
             }else{
-              this.showMsgBox(`meme 创建失败，error:${msg}`)
+              this.showMsgBox(`meme 创建失败，error:${res.msg}`)
             }
           })
       },
@@ -159,7 +163,7 @@
           method: 'post',
           data: {
             sha1,
-            resourceName: `meme-demo-${+new Date()}`,
+            resourceName: `meme-${+new Date()}`,
             meta: {
               "dependencies": [
                 resourceId
